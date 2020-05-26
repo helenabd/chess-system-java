@@ -2,9 +2,9 @@ package boardgame;
 
 public class Board {
 
-	private int rows;
-	private int columns;
-	private Piece [][] pieces;
+	private int rows;//quantidade de linhas
+	private int columns;//quantidade de colunas
+	private Piece [][] pieces;//matriz de peças
 	
 	public Board(int rows, int columns) {
 		//implementando exceção no construtor para que aja pelo menos uma linha e uma coluna
@@ -13,7 +13,7 @@ public class Board {
 		}
 		this.rows = rows;
 		this.columns = columns;
-		this.pieces = new Piece[rows][columns];
+		this.pieces = new Piece[rows][columns];//será instanciada na quantidade de linhas e colunas informadas
 	}
 
 	public int getRows() {
@@ -24,6 +24,7 @@ public class Board {
 		return columns;
 	}
 	
+	//Método para retornar a peça localizada na linha e coluna recebidas
 	public Piece piece(int row, int column) {
 		//programaçao defensiva, testar se a posiçao existe
 		if(!positionExists(row, column)) {
@@ -32,6 +33,7 @@ public class Board {
 		return this.pieces[row][column];
 	}
 	
+	//Método para retornar a peça localizada na posição indicada
 	public Piece piece(Position position) {
 		//programaçao defensiva, testar se a posiçao existe
 		if(!positionExists(position)) {
