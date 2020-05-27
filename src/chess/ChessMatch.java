@@ -7,36 +7,51 @@ import chess.pieces.Rook;
 public class ChessMatch {
 
 	private Board board;
-	
+
 	public ChessMatch() {
-		//Quem tem que saber a dimensão de um tabuleiro de xadrez é a classe da partida de xadrez
+		// Quem tem que saber a dimensão de um tabuleiro de xadrez é a classe da partida
+		// de xadrez
 		board = new Board(8, 8);
-		initialSetup();//iniciar a partida
+		initialSetup();// iniciar a partida
 	}
-	
-	//Retorna uma matriz de peças de xadrez correspondentes a essa partida
+
+	// Retorna uma matriz de peças de xadrez correspondentes a essa partida
 	public ChessPiece[][] getPieces() {
-		//Não quero liberar as peças do tipo Piece e sim as peças do método ChessPiece
-		//O programa só vai conseguir enxergar a peça de xadrez e não a peça do tabuleiro
-		ChessPiece [][] mat = new ChessPiece[this.board.getRows()][this.board.getColumns()];//variável auxiliar
-		//Irei percorrer a matriz do meu tabuleiro e para cada peça irei fazer um downcasting para ChessPiece, para interpretar como uma peça de xadrez e não uma comum
-		for(int i=0; i<this.board.getRows(); i++) {
-			for(int j=0; j<this.board.getColumns(); j++) {
+		// Não quero liberar as peças do tipo Piece e sim as peças do método ChessPiece
+		// O programa só vai conseguir enxergar a peça de xadrez e não a peça do
+		// tabuleiro
+		ChessPiece[][] mat = new ChessPiece[this.board.getRows()][this.board.getColumns()];// variável auxiliar
+		// Irei percorrer a matriz do meu tabuleiro e para cada peça irei fazer um
+		// downcasting para ChessPiece, para interpretar como uma peça de xadrez e não
+		// uma comum
+		for (int i = 0; i < this.board.getRows(); i++) {
+			for (int j = 0; j < this.board.getColumns(); j++) {
 				mat[i][j] = (ChessPiece) this.board.piece(i, j);
 			}
 		}
 		return mat;
 	}
-	
-	//Esse método vai receber as coordenadas do xadrez e converter para as posições do tabuleiro
+
+	// Esse método vai receber as coordenadas do xadrez e converter para as posições
+	// do tabuleiro
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		this.board.placePiece(piece, new ChessPosition(column, row).toPosition());
 	}
-	
-	//Responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro
+
+	// Responsável por iniciar a partida de xadrez, colocando as peças no tabuleiro
 	private void initialSetup() {
-		placeNewPiece('b', 6, new Rook(board, Color.WHITE));
-		placeNewPiece('e', 8, new King(board, Color.BLACK));
-		placeNewPiece('e', 1, new King(board, Color.WHITE));
+		placeNewPiece('c', 1, new Rook(board, Color.WHITE));
+		placeNewPiece('c', 2, new Rook(board, Color.WHITE));
+		placeNewPiece('d', 2, new Rook(board, Color.WHITE));
+		placeNewPiece('e', 2, new Rook(board, Color.WHITE));
+		placeNewPiece('e', 1, new Rook(board, Color.WHITE));
+		placeNewPiece('d', 1, new King(board, Color.WHITE));
+
+		placeNewPiece('c', 7, new Rook(board, Color.BLACK));
+		placeNewPiece('c', 8, new Rook(board, Color.BLACK));
+		placeNewPiece('d', 7, new Rook(board, Color.BLACK));
+		placeNewPiece('e', 7, new Rook(board, Color.BLACK));
+		placeNewPiece('e', 8, new Rook(board, Color.BLACK));
+		placeNewPiece('d', 8, new King(board, Color.BLACK));
 	}
 }
