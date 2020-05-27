@@ -52,6 +52,21 @@ public class Board {
 		piece.position = position;
 	}
 	
+	//Remove peça informada como parametro
+	public Piece removePiece(Position position) {
+		//Programação defensiva para ver se peça existe
+		if(!positionExists(position)) {
+			throw new BoardException("Position not on the board");
+		}
+		if(piece(position) == null) {
+			return null;
+		}
+		Piece aux = piece(position);
+		aux.position = null;
+		pieces[position.getRow()][position.getColumn()] = null;
+		return aux;
+	}
+	
 	//Dentro da classe vai ter um momento que vai ser mais fácil testar se a posição existe pela linha e pela coluna
 	private boolean positionExists(int row, int column) {
 		//Quando uma posição numa dada linha e coluna existe, quando a posição esta dentro do tabuleiro
