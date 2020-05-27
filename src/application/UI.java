@@ -32,9 +32,15 @@ public class UI {
 	public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
 	public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
 	public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+	
+	// https://stackoverflow.com/questions/2979383/java-clear-the-console
+	//Limpar a tela
+	public static void clearScreen() {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
+	}
 
-	// Vai receber a leitura da posição utilizando o scanner instanciado no progrma
-	// principal
+	// Vai receber a leitura da posição utilizando o scanner instanciado no programa principal
 	public static ChessPosition readChessPosition(Scanner sc) {
 		try {
 			String s = sc.nextLine(); //Vai ler a posição como uma string
