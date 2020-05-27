@@ -42,6 +42,7 @@ public class Board {
 		return this.pieces[position.getRow()][position.getColumn()];
 	}
 	
+	//Atribui a peça informada na posição informada
 	public void placePiece(Piece piece, Position position) {
 		//programação defensiva, testar se já existe uma peça nessa posição
 		if(thereIsAPiece(position)) {
