@@ -56,6 +56,9 @@ public class ChessMatch {
 		if(!board.thereIsAPiece(position)) {
 			throw new ChessExeption("There is no piece on source position");
 		}
+		if(!board.piece(position).isThereAnyPossibleMove()) {
+			throw new ChessExeption("There is no possible moves for the chosen piece");
+		}
 	}
 	
 	// Esse método vai receber as coordenadas do xadrez e converter para as posições do tabuleiro
