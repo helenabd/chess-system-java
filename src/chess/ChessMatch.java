@@ -33,6 +33,13 @@ public class ChessMatch {
 		}
 		return mat;
 	}
+	
+	//Método para implementar os movimentos posiveis dada uma posição, para colorir o fundo de cada posição
+	public boolean[][] possibleMoves(ChessPosition sourcePosition){
+		Position position = sourcePosition.toPosition();
+		validateSourcePosition(position);
+		return board.piece(position).possibleMoves();
+	}
 
 	//Método para validar o movimento das peças e capturas
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
