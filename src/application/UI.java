@@ -66,6 +66,12 @@ public class UI {
 		System.out.println();
 		System.out.println("Turn: " + chessMatch.getTurn());
 		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
+		
+		//Acrescentar a informação xeque caso seja necessária
+		if(chessMatch.getCheck()) {
+			System.out.println("CHECK!");
+		}
+		
 	}
 
 	// Recebe a matriz de peças da minha partida, para imprimir as peças no tabuleiro

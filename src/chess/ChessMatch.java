@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -14,13 +15,13 @@ public class ChessMatch {
 	private int turn;
 	private Color currentPlayer;
 	private Board board;
+	private boolean check;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<Piece>();
 	private List<Piece> capturedPieces = new ArrayList<Piece>();
 
 	public ChessMatch() {
-		// Quem tem que saber a dimensão de um tabuleiro de xadrez é a classe da partida
-		// de xadrez
+		// Quem tem que saber a dimensão de um tabuleiro de xadrez é a classe da partida de xadrez
 		board = new Board(8, 8);
 		turn = 1;
 		currentPlayer = Color.WHITE;
@@ -33,6 +34,10 @@ public class ChessMatch {
 
 	public Color getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public boolean getCheck() {
+		return check;
 	}
 
 	// Retorna uma matriz de peças de xadrez correspondentes a essa partida
@@ -66,6 +71,16 @@ public class ChessMatch {
 		validateSourcePosition(source); //Validação da posição de origem, se havia uma peça
 		validateTargetPosition(source, target);//Validação da posição de destino
 		Piece capturedPiece = makeMove(source, target);//Realizar o movimento da peça para captura
+		
+		//Testar se esse movimento colocou o próprio jogador em xeque
+		if(testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece);
+			throw new ChessExeption("You can't put yourself in check");
+		}
+		
+		//Testar se o oponente ficou em xeque
+		check = (testCheck(opponent(currentPlayer))) ? true : false;	
+		
 		nextTurn();//Para trocar o jogador
 		return (ChessPiece) capturedPiece; //downcasting para converter a Piece em ChessPiece
 	}
@@ -83,6 +98,21 @@ public class ChessMatch {
 		
 		return capturedPiece;//retorna a peça capturada
 	}
+	
+	//Método para desfazer um movimento
+	private void undoMove(Position source, Position target, Piece capturedPiece) {
+		Piece p = board.removePiece(target); //tirar a peça que moveu do destino e devolve-lá para posição de origem
+		board.placePiece(p, source);
+		
+		//Se tiver sido capturada uma peça, tenho que voltar ela para o tabuleiro na posição de destino
+		if(capturedPiece != null) {
+			board.placePiece(capturedPiece, target);
+			//Tenho que tirar essa peça da lista de peças capturadas e coloca-lá novamente na lista de peças do tabuleiro
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
+	}
+	
 	
 	//Método para validar se existe uma peça na posição informada
 	private void validateSourcePosition(Position position) {
@@ -109,6 +139,40 @@ public class ChessMatch {
 		turn++;
 		//Troca de turno, se a cor atual for branca, troca para preto, se a posição atual não for branca troca para branco
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	//Método para devolver o oponente da cor
+	private Color opponent(Color color) {
+		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	//Método para localizar o rei de uma determinada cor, varrer as peças do jogo para localizar o rei
+	private ChessPiece king(Color color) {
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		for(Piece p : list) {
+			if(p instanceof King) {
+				return (ChessPiece) p;
+			}
+		}
+		throw new IllegalStateException("There is no" + color + " king on the board");
+	}
+	
+	//Método para testar se o rei de uma determinada cor está em xeque
+	private boolean testCheck(Color color) {
+		Position kingPosition = king(color).getChessPosition().toPosition(); //pego a posição do meu rei em formato de matriz
+		//peças no tabuleiro filtradas com a cor do oponente desse rei
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
+		//peguei a lista de peças do oponente e para cada peça contida nessa lista, eu vou ter que testar
+		//se existe algum movimento possível que leva a posição do meu rei
+		for(Piece p : opponentPieces) {
+			//matriz de movimentos possíveis dessa peça adversária p, se nessa matriz a posição correspondente
+			//a posição do rei for true, significa que o rei está em xeque
+			boolean[][] mat = p.possibleMoves();
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) {//se verdadeiro, o rei está em xeque
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	// Esse método vai receber as coordenadas do xadrez e converter para as posições do tabuleiro
