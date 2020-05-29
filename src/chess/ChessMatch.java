@@ -8,13 +8,25 @@ import chess.pieces.Rook;
 
 public class ChessMatch {
 
+	private int turn;
+	private Color currentPlayer;
 	private Board board;
 
 	public ChessMatch() {
 		// Quem tem que saber a dimensão de um tabuleiro de xadrez é a classe da partida
 		// de xadrez
 		board = new Board(8, 8);
+		turn = 1;
+		currentPlayer = Color.WHITE;
 		initialSetup();// iniciar a partida
+	}
+
+	public int getTurn() {
+		return turn;
+	}
+
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 
 	// Retorna uma matriz de peças de xadrez correspondentes a essa partida
@@ -48,6 +60,7 @@ public class ChessMatch {
 		validateSourcePosition(source); //Validação da posição de origem, se havia uma peça
 		validateTargetPosition(source, target);//Validação da posição de destino
 		Piece capturedPiece = makeMove(source, target);//Realizar o movimento da peça para captura
+		nextTurn();//Para trocar o jogador
 		return (ChessPiece) capturedPiece; //downcasting para converter a Piece em ChessPiece
 	}
 	
@@ -64,6 +77,9 @@ public class ChessMatch {
 		if(!board.thereIsAPiece(position)) {
 			throw new ChessExeption("There is no piece on source position");
 		}
+		if(currentPlayer != ((ChessPiece)board.piece(position)).getColor()) {
+			throw new ChessExeption("The chosen piece is not yours");
+		}
 		if(!board.piece(position).isThereAnyPossibleMove()) {
 			throw new ChessExeption("There is no possible moves for the chosen piece");
 		}
@@ -74,6 +90,13 @@ public class ChessMatch {
 		if(!board.piece(source).possibleMove(target)) {
 			throw new ChessExeption("The chosen piece can't move to target position");
 		}
+	}
+	
+	//Método para trocar o turno do jogador
+	private void nextTurn() {
+		turn++;
+		//Troca de turno, se a cor atual for branca, troca para preto, se a posição atual não for branca troca para branco
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
 	}
 	
 	// Esse método vai receber as coordenadas do xadrez e converter para as posições do tabuleiro
