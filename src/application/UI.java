@@ -65,13 +65,19 @@ public class UI {
 		printCapturedPieces(captured);
 		System.out.println();
 		System.out.println("Turn: " + chessMatch.getTurn());
-		System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
-		
-		//Acrescentar a informação xeque caso seja necessária
-		if(chessMatch.getCheck()) {
-			System.out.println("CHECK!");
+		//se não estiver com xeque mate, sigo para proxima jogada; se estiver em xeque mate finalizo o jogo
+		if(!chessMatch.getCheckMate()) {
+			System.out.println("Waiting player: " + chessMatch.getCurrentPlayer());
+			//Acrescentar a informação xeque caso seja necessária
+			if(chessMatch.getCheck()) {
+				System.out.println("CHECK!");
+			}
 		}
-		
+		else {
+			System.out.println("CHECKMATE!");
+			System.out.println("Winner: " + chessMatch.getCurrentPlayer());
+		}
+
 	}
 
 	// Recebe a matriz de peças da minha partida, para imprimir as peças no tabuleiro
