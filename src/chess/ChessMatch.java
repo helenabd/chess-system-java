@@ -1,5 +1,6 @@
 package chess;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ public class ChessMatch {
 	private boolean check;
 	private boolean checkMate;
 	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<Piece>();
 	private List<Piece> capturedPieces = new ArrayList<Piece>();
@@ -52,6 +54,10 @@ public class ChessMatch {
 	
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
+	}
+	
+	public ChessPiece getPromoted() {
+		return promoted;
 	}
 
 	// Retorna uma matriz de peças de xadrez correspondentes a essa partida
@@ -95,6 +101,16 @@ public class ChessMatch {
 		//Fazer o movimento e a peça movida foi a de destino
 		ChessPiece movedPiece = (ChessPiece)board.piece(target);
 		
+		//Promoção do peão
+		promoted = null;
+		if(movedPiece instanceof Pawn) {
+			if((movedPiece.getColor() == Color.WHITE && target.getRow() == 0) || (movedPiece.getColor() == Color.BLACK && target.getRow() == 7)) {
+				promoted = (ChessPiece)board.piece(target);
+				promoted = replacePromotedPiece("Q");
+			}
+		}
+		
+		
 		//Testar se o oponente ficou em xeque
 		check = (testCheck(opponent(currentPlayer))) ? true : false;	
 		
@@ -117,6 +133,36 @@ public class ChessMatch {
 		
 		
 		return (ChessPiece) capturedPiece; //downcasting para converter a Piece em ChessPiece
+	}
+	
+	//Metodo para promover o peão
+	public ChessPiece replacePromotedPiece(String type) {
+		//Programação defensiva para ver se existe peça a ser promovida
+		if(promoted == null) {
+			throw new IllegalStateException("There is no piece to be promoted");
+		}
+		//Programação defensiva para ver se a peça promovida está entre as indicadas
+		if(!type.equals("B") && !type.equals("N") && !type.equals("R") && !type.equals("Q")) {
+			throw new InvalidParameterException("Invalid type for promotion");
+		}
+		
+		Position pos = promoted.getChessPosition().toPosition();//pegar a posição da peça promovida
+		Piece p = board.removePiece(pos);//vai receber a peça que foi removida
+		piecesOnTheBoard.remove(p);//excluir da lista de peças do tabuleiro
+		
+		ChessPiece newPiece = newPiece(type, promoted.getColor());//instanciar uma nova peça e coloca-la na posição que estava o peão
+		board.placePiece(newPiece, pos);//colocar a nova peça na posição da peça promovida
+		piecesOnTheBoard.add(newPiece);//adicionar na lista de peças a nova peça promovida
+		
+		return newPiece;
+	}
+	
+	//Método auxiliar para testar o tipo de peça a ser instanciada e instancia-la
+	private ChessPiece newPiece(String type, Color color) {
+		if(type.equals("B")) return new Bishop(board, color);
+		if(type.equals("N")) return new Knight(board, color);
+		if(type.equals("Q")) return new Queen(board, color);
+		return new Rook(board, color);
 	}
 	
 	//Método para realizar o movimento, recebendo a posição de origem e a posição de destino
